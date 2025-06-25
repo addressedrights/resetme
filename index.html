@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResetMe - Easy Password Reset Help</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --bg-light: linear-gradient(135deg, #f0f9ff, #e0f2fe, #f8fafc);
+      --bg-dark: #0f172a;
+      --card-light: rgba(255,255,255,0.95);
+      --card-dark: #1e293b;
+      --text-light: #1e293b;
+      --text-dark: #f1f5f9;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --shadow: 0 10px 40px rgba(0,0,0,0.1);
+      --shadow-strong: 0 20px 60px rgba(0,0,0,0.15);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: all 0.3s ease;
+      line-height: 1.6;
+    }
+
+    .dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .dark-mode .card {
+      background: var(--card-dark);
+      border: 1px solid #334155;
+    }
+
+    .dark-mode .select-container {
+      background: var(--card-dark);
+      border: 1px solid #334155;
+    }
+
+    .dark-mode select {
+      background: var(--card-dark);
+      color: var(--text-dark);
+      border: none;
+    }
+
+    .toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 100;
+    }
+
+    .toggle:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-strong);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .header-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .header-icon svg {
+      width: 40px;
+      height: 40px;
+      fill: white;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 1.3rem;
+      color: #64748b;
+      margin-top: 0.5rem;
+      font-weight: 400;
+    }
+
+    .selector-section {
+      background: var(--card-light);
+      padding: 2.5rem;
+      border-radius: 2rem;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .selector-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+    }
+
+    .dark-mode .selector-title {
+      color: var(--text-dark);
+    }
+
+    .select-container {
+      position: relative;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+
+    .provider-icons {
+      display: flex;
+      justify-content: space-around;
+      padding: 1rem;
+      background: rgba(14, 165, 233, 0.05);
+    }
+
+    .provider-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .gmail-icon { background: linear-gradient(135deg, #ea4335, #fbbc04); }
+    .yahoo-icon { background: linear-gradient(135deg, #6001d2, #9c4fff); }
+    .outlook-icon { background: linear-gradient(135deg, #0078d4, #40e0d0); }
+
+    select {
+      width: 100%;
+      padding: 1.2rem 1.5rem;
+      font-size: 1.2rem;
+      border: none;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-light);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 1rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5rem;
+    }
+
+    .help-tip {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(14, 165, 233, 0.1);
+      border-radius: 1rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .card {
+      display: none;
+      background: var(--card-light);
+      border-radius: 2rem;
+      padding: 3rem;
+      margin-top: 2rem;
+      width: 100%;
+      box-shadow: var(--shadow-strong);
+      animation: slideInUp 0.6s ease-out;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(14, 165, 233, 0.1);
+    }
+
+    .card-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .card-icon.gmail-icon { background: linear-gradient(135deg, #ea4335, #fbbc04); }
+    .card-icon.yahoo-icon { background: linear-gradient(135deg, #6001d2, #9c4fff); }
+    .card-icon.outlook-icon { background: linear-gradient(135deg, #0078d4, #40e0d0); }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    .dark-mode .card h2 {
+      color: var(--text-dark);
+    }
+
+    .steps-container {
+      margin-top: 2rem;
+    }
+
+    ol {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step-counter;
+    }
+
+    li {
+      counter-increment: step-counter;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: rgba(14, 165, 233, 0.05);
+      border-radius: 1.5rem;
+      border-left: 4px solid var(--accent);
+      position: relative;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    li::before {
+      content: counter(step-counter);
+      background: var(--accent);
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.5rem;
+      background: rgba(14, 165, 233, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    a:hover {
+      background: var(--accent);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .security-tip {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+      border: 2px solid var(--success);
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      display: flex;
+      align-items: flex-start;
+    }
+
+    .security-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+
+    .security-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .security-text {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .security-title {
+      font-weight: 700;
+      color: var(--success);
+      margin-bottom: 0.5rem;
+    }
+
+    footer {
+      margin-top: 4rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #64748b;
+      padding: 2rem;
+      border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    @keyframes slideInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .card {
+        padding: 2rem;
+      }
+      
+      .provider-icons {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle" id="toggle">🌙 Dark Mode</button>
+  
+  <div class="container">
+    <div class="header">
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.4 7 14.8 8.6 14.8 10V11.5C15.4 11.5 16 12.1 16 12.7V16.8C16 17.4 15.4 18 14.8 18H9.2C8.6 18 8 17.4 8 16.8V12.6C8 12 8.6 11.4 9.2 11.4V10C9.2 8.6 10.6 7 12 7M12 8.2C11.2 8.2 10.5 8.7 10.5 10V11.5H13.5V10C13.5 8.7 12.8 8.2 12 8.2Z"/>
+        </svg>
+      </div>
+      <h1>ResetMe</h1>
+      <p class="subtitle">Get back into your email account easily</p>
+    </div>
+
+    <div class="selector-section">
+      <h2 class="selector-title">Which email service do you use?</h2>
+      
+      <div class="provider-icons">
+        <div class="provider-icon gmail-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <path fill="#ea4335" d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64L12 9.548l6.545-4.91l1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+            <path fill="#34a853" d="M0 5.457c0-1.597 1.203-2.945 2.727-3.106l.2-.012L12 9.548l9.073-7.21l.2.013C22.797 2.512 24 3.86 24 5.457l-12 9.003z"/>
+            <path fill="#fbbc04" d="M7.273 11.73v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457l7.273 6.273z"/>
+            <path fill="#ea4335" d="M16.727 11.73v9.273h5.637c.904 0 1.636-.732 1.636-1.636V5.457l-7.273 6.273z"/>
+          </svg>
+        </div>
+        <div class="provider-icon yahoo-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <path fill="#6001d2" d="M12.008 0C5.374 0 0 5.374 0 12.008s5.374 12.008 12.008 12.008 12.008-5.374 12.008-12.008S18.642 0 12.008 0zm5.274 7.708l-3.063 5.408.004 4.058h-1.43l-.004-4.058-3.063-5.408h1.606l2.226 3.961 2.226-3.961h1.498z"/>
+          </svg>
+        </div>
+        <div class="provider-icon outlook-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24">
+            <path fill="#0078d4" d="M7.462 4.5h9.615a3.923 3.923 0 0 1 3.923 3.923v7.154a3.923 3.923 0 0 1-3.923 3.923H7.462a3.923 3.923 0 0 1-3.923-3.923V8.423A3.923 3.923 0 0 1 7.462 4.5z"/>
+            <path fill="#fff" d="M12 6.923c-2.769 0-5.077 2.308-5.077 5.077S9.231 17.077 12 17.077s5.077-2.308 5.077-5.077S14.769 6.923 12 6.923zm0 8.615c-1.954 0-3.538-1.585-3.538-3.538S10.046 8.462 12 8.462 15.538 10.046 15.538 12 13.954 15.538 12 15.538z"/>
+            <path fill="#0078d4" d="M12 9.231c-1.523 0-2.769 1.246-2.769 2.769s1.246 2.769 2.769 2.769 2.769-1.246 2.769-2.769-1.246-2.769-2.769-2.769z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="select-container">
+        <select id="provider">
+          <option value="gmail">Gmail (Google)</option>
+          <option value="yahoo">Yahoo Mail</option>
+          <option value="outlook">Outlook / Hotmail (Microsoft)</option>
+        </select>
+      </div>
+
+      <div class="help-tip">
+        💡 <strong>Not sure?</strong> Look at your email address ending: gmail.com, yahoo.com, or outlook.com/hotmail.com
+      </div>
+    </div>
+
+    <div id="instructions" class="card">
+      <div class="card-header">
+        <div class="card-icon" id="cardIcon"></div>
+        <h2 id="providerName"></h2>
+      </div>
+      
+      <div class="steps-container">
+        <ol id="steps"></ol>
+      </div>
+
+      <div class="security-tip">
+        <div class="security-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+          </svg>
+        </div>
+        <div class="security-text">
+          <div class="security-title">Security Tip</div>
+          After resetting your password, choose a strong password that you haven't used before. Consider using a mix of letters, numbers, and symbols.
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 ResetMe. Built to help you get back online safely and easily.</p>
+      <p>🔒 Your privacy matters - we don't store any of your information</p>
+    </footer>
+  </div>
+
+  <script>
+    const providers = {
+      gmail: {
+        name: "Gmail Password Reset",
+        icon: "gmail-icon",
+        iconSvg: `<svg width="40" height="40" viewBox="0 0 24 24">
+          <path fill="#ea4335" d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64L12 9.548l6.545-4.91l1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+          <path fill="#34a853" d="M0 5.457c0-1.597 1.203-2.945 2.727-3.106l.2-.012L12 9.548l9.073-7.21l.2.013C22.797 2.512 24 3.86 24 5.457l-12 9.003z"/>
+          <path fill="#fbbc04" d="M7.273 11.73v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457l7.273 6.273z"/>
+          <path fill="#ea4335" d="M16.727 11.73v9.273h5.637c.904 0 1.636-.732 1.636-1.636V5.457l-7.273 6.273z"/>
+        </svg>`,
+        steps: [
+          "<div class='step-content'>🌐 <strong>Go to Google's recovery page</strong><br>Visit <a href='https://accounts.google.com/signin/recovery' target='_blank'>accounts.google.com/signin/recovery</a></div>",
+          "<div class='step-content'>✉️ <strong>Enter your Gmail address</strong><br>Type your email (like yourname@gmail.com) and click 'Next'</div>",
+          "<div class='step-content'>🔑 <strong>Try your password or skip</strong><br>Enter your last password if you remember it, or click 'Try another way'</div>",
+          "<div class='step-content'>📱 <strong>Choose how to get your code</strong><br>Pick email, phone, or another recovery method</div>",
+          "<div class='step-content'>🔢 <strong>Enter the code</strong><br>Type the verification code you received</div>",
+          "<div class='step-content'>🆕 <strong>Make a new password</strong><br>Create a strong password and type it twice</div>"
+        ]
+      },
+      yahoo: {
+        name: "Yahoo Mail Password Reset",
+        icon: "yahoo-icon",
+        iconSvg: `<svg width="40" height="40" viewBox="0 0 24 24">
+          <path fill="#6001d2" d="M12.008 0C5.374 0 0 5.374 0 12.008s5.374 12.008 12.008 12.008 12.008-5.374 12.008-12.008S18.642 0 12.008 0zm5.274 7.708l-3.063 5.408.004 4.058h-1.43l-.004-4.058-3.063-5.408h1.606l2.226 3.961 2.226-3.961h1.498z"/>
+        </svg>`,
+        steps: [
+          "<div class='step-content'>🌐 <strong>Go to Yahoo's help page</strong><br>Visit <a href='https://login.yahoo.com/forgot' target='_blank'>login.yahoo.com/forgot</a></div>",
+          "<div class='step-content'>✉️ <strong>Enter your Yahoo email</strong><br>Type your email address and click 'Continue'</div>",
+          "<div class='step-content'>📱 <strong>Choose recovery method</strong><br>Pick email or text message to get your code</div>",
+          "<div class='step-content'>🔢 <strong>Enter the 8-digit code</strong><br>Type the code Yahoo sent you</div>",
+          "<div class='step-content'>🆕 <strong>Create new password</strong><br>Click 'Create a new password' and enter it twice</div>",
+          "<div class='step-content'>✅ <strong>All done!</strong><br>Click 'Continue' to access your Yahoo Mail</div>"
+        ]
+      },
+      outlook: {
+        name: "Outlook Password Reset",
+        icon: "outlook-icon",
+        iconSvg: `<svg width="40" height="40" viewBox="0 0 24 24">
+          <path fill="#0078d4" d="M7.462 4.5h9.615a3.923 3.923 0 0 1 3.923 3.923v7.154a3.923 3.923 0 0 1-3.923 3.923H7.462a3.923 3.923 0 0 1-3.923-3.923V8.423A3.923 3.923 0 0 1 7.462 4.5z"/>
+          <path fill="#fff" d="M12 6.923c-2.769 0-5.077 2.308-5.077 5.077S9.231 17.077 12 17.077s5.077-2.308 5.077-5.077S14.769 6.923 12 6.923zm0 8.615c-1.954 0-3.538-1.585-3.538-3.538S10.046 8.462 12 8.462 15.538 10.046 15.538 12 13.954 15.538 12 15.538z"/>
+          <path fill="#0078d4" d="M12 9.231c-1.523 0-2.769 1.246-2.769 2.769s1.246 2.769 2.769 2.769 2.769-1.246 2.769-2.769-1.246-2.769-2.769-2.769z"/>
+        </svg>`,
+        steps: [
+          "<div class='step-content'>🌐 <strong>Go to Microsoft's reset page</strong><br>Visit <a href='https://account.live.com/password/reset' target='_blank'>account.live.com/password/reset</a></div>",
+          "<div class='step-content'>🔒 <strong>Say you forgot your password</strong><br>Select 'I forgot my password' and click 'Next'</div>",
+          "<div class='step-content'>✉️ <strong>Enter your email address</strong><br>Type your Outlook/Hotmail email address</div>",
+          "<div class='step-content'>🤖 <strong>Complete the puzzle</strong><br>Solve the CAPTCHA and click 'Next'</div>",
+          "<div class='step-content'>📱 <strong>Choose how to get your code</strong><br>Pick email or phone, then click 'Get code'</div>",
+          "<div class='step-content'>🆕 <strong>Enter code and new password</strong><br>Type the code, then create your new password</div>"
+        ]
+      }
+    };
+
+    const select = document.getElementById('provider');
+    const instructions = document.getElementById('instructions');
+    const nameEl = document.getElementById('providerName');
+    const stepsEl = document.getElementById('steps');
+    const cardIcon = document.getElementById('cardIcon');
+    const toggle = document.getElementById('toggle');
+
+    function render(key) {
+      const { name, steps, icon, iconSvg } = providers[key];
+      nameEl.textContent = name;
+      cardIcon.className = `card-icon ${icon}`;
+      cardIcon.innerHTML = iconSvg;
+      stepsEl.innerHTML = steps.map(s => `<li>${s}</li>`).join('');
+      instructions.style.display = 'block';
+    }
+
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      toggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    });
+
+    select.addEventListener('change', e => render(e.target.value));
+    render(select.value);
+  </script>
+</body>
+</html>
